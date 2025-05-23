@@ -9,12 +9,18 @@ import { Label } from "@/components/ui/label"
 import { MessageSquare, Send, Bot } from "lucide-react"
 import { searchResumeChunks } from "@/lib/resume-search"
 
-interface Message {
+// Section: Type Definitions
+// Purpose: Define message structure for chat interface
+type Message = {
   text: string
   sender: "user" | "bot"
 }
 
+// Section: Component Definition
+// Purpose: Provide an interactive chatbot interface for portfolio visitors
 export function ChatbotButton() {
+  // Section: State Management
+  // Purpose: Track chat state, messages, and UI elements
   const [isOpen, setIsOpen] = useState(false)
   const [message, setMessage] = useState("")
   const [email, setEmail] = useState("")
@@ -26,6 +32,8 @@ export function ChatbotButton() {
   ])
   const [isLoading, setIsLoading] = useState(false)
 
+  // Section: Message Handling
+  // Purpose: Process user messages and generate AI responses
   const handleSendMessage = async () => {
     if (!message.trim()) return
 
@@ -64,8 +72,20 @@ export function ChatbotButton() {
     }
   }
 
+  // Section: Component UI
+  // Purpose: Render chat interface with message history and input
   return (
     <>
+      {/* Chat Toggle Button */}
+      <Button
+        onClick={() => setIsOpen(true)}
+        className="fixed bottom-6 right-6 h-12 w-12 rounded-full shadow-lg"
+        size="icon"
+      >
+        <MessageSquare className="h-6 w-6" />
+      </Button>
+
+      {/* Chat Sheet */}
       <Sheet open={isOpen} onOpenChange={setIsOpen}>
         <SheetTrigger asChild>
           <Button 
@@ -85,7 +105,7 @@ export function ChatbotButton() {
           </SheetHeader>
 
           <div className="flex flex-col h-[calc(100vh-8rem)]">
-            {/* Messages */}
+            {/* Message History */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map((msg, index) => (
                 <div
@@ -116,16 +136,13 @@ export function ChatbotButton() {
               )}
             </div>
 
-            {/* Input area */}
-            <div className="p-4 border-t">
-              <div className="flex items-end gap-2">
-                <div className="flex-grow">
-                  <Textarea
-                    placeholder="Type your message..."
+            {/* Message Input */}
+            <div className="border-t p-4">
+              <div className="flex gap-2">
+                <Input
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    className="resize-none"
-                    rows={2}
+                  placeholder="Type your message..."
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault()
@@ -133,17 +150,17 @@ export function ChatbotButton() {
                       }
                     }}
                   />
-                </div>
                 <Button 
                   onClick={handleSendMessage}
-                  disabled={!message.trim() || isLoading}
+                  disabled={isLoading || !message.trim()}
+                  size="icon"
                 >
                   <Send className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            {/* Optional contact info */}
+            {/* Optional Email Collection */}
             <SheetFooter className="px-4 py-3 border-t flex flex-col sm:flex-row gap-3">
               <div className="grid w-full gap-1.5">
                 <Label htmlFor="email">Email (optional)</Label>

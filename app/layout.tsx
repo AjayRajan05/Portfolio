@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Poppins } from 'next/font/google';
 import type { NextWebVitalsMetric } from 'next/app';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 
 import { ThemeProvider } from '@/components/theme/theme-provider';
 import { Header } from '@/components/layout/Header';
@@ -28,23 +29,46 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: 'Ajay Rajan - Portfolio',
-  description: 'Full-stack developer specializing in React, Next.js, and modern web technologies. View my projects, skills, and get in touch for collaborations.',
-  keywords: ['Ajay Rajan', 'Full Stack Developer', 'React', 'Next.js', 'TypeScript', 'Web Development', 'Portfolio'],
-  authors: [{ name: 'Ajay Rajan' }],
-  creator: 'Ajay Rajan',
+  title: {
+    default: 'Portfolio | AI/ML Engineer',
+    template: '%s | Portfolio'
+  },
+  description: 'AI/ML Engineer specializing in machine learning, deep learning, and artificial intelligence solutions.',
+  keywords: ['AI', 'ML', 'Machine Learning', 'Deep Learning', 'Artificial Intelligence', 'Data Science'],
+  authors: [{ name: 'Your Name' }],
+  creator: 'Your Name',
+  publisher: 'Your Name',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
+  alternates: {
+    canonical: '/',
+  },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
   openGraph: {
-    type: 'website',
+    title: 'Portfolio | AI/ML Engineer',
+    description: 'AI/ML Engineer specializing in machine learning, deep learning, and artificial intelligence solutions.',
+    url: '/',
+    siteName: 'Portfolio',
     locale: 'en_US',
-    url: 'https://your-domain.com',
-    title: 'Ajay Rajan - Portfolio',
-    description: 'Full-stack developer specializing in React, Next.js, and modern web technologies.',
-    siteName: 'Ajay Rajan Portfolio',
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Ajay Rajan - Portfolio',
-    description: 'Full-stack developer specializing in React, Next.js, and modern web technologies.',
+    title: 'Portfolio | AI/ML Engineer',
+    description: 'AI/ML Engineer specializing in machine learning, deep learning, and artificial intelligence solutions.',
     creator: '@yourtwitterhandle',
   },
   robots: {
@@ -59,9 +83,12 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-site-verification',
+    google: process.env.GOOGLE_VERIFICATION_ID,
   },
 };
+
+// Update the Google Analytics script
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_ID
 
 export default function RootLayout({
   children,
@@ -101,6 +128,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.variable} ${poppins.variable} font-sans antialiased`}>
+        <SessionProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -121,6 +149,7 @@ export default function RootLayout({
           <GoogleAnalytics />
           <ServiceWorkerRegistration />
         </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

@@ -23,8 +23,10 @@ const nextConfig = {
     scrollRestoration: true,
   },
   env: {
-    // Add any public environment variables here
-    SITE_URL: process.env.SITE_URL,
+    // Public environment variables
+    SITE_URL: process.env.SITE_URL || 'http://localhost:3001',
+    NEXT_PUBLIC_ALLOWED_DOMAINS: process.env.NEXT_PUBLIC_ALLOWED_DOMAINS || 'gmail.com,outlook.com,yahoo.com,hotmail.com,icloud.com',
+    NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
   },
   // Enable React strict mode for better development experience
   reactStrictMode: true,

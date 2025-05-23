@@ -1,19 +1,20 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { getToken } from 'next-auth/jwt'
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   // Get the pathname of the request
   const path = request.nextUrl.pathname
 
   // Define protected paths that require authentication
-  const isProtectedPath = path.startsWith('/dashboard') || path.startsWith('/api')
+  const isProtectedPath = path.startsWith('/admin') || path.startsWith('/api/admin')
 
-  // Get the token from the cookies
-  const token = request.cookies.get('token')?.value || ''
+  // Get the session token
+  const token = await getToken({ req: request })
 
   // Only check authentication for protected paths
   if (isProtectedPath && !token) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
   // Add security headers
@@ -36,7 +37,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/api/:path*',
+    '/admin/:path*',
+    '/api/admin/:path*',
   ],
 } 

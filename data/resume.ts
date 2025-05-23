@@ -1,5 +1,19 @@
 import { ResumeData } from "@/types/resume"
 
+export interface Project {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  shortDescription: string;
+  technologies: string[];
+  image: string;
+  github: string;
+  url: string;
+  featured: boolean;
+  link?: string;
+}
+
 export const resumeData: ResumeData = {
   basics: {
     name: "Ajay Rajan A",

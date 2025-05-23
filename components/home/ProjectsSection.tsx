@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -10,20 +10,23 @@ import { gsap } from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import { resumeData } from "@/data/resume"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 
 // Register GSAP plugins
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger)
 }
 
+// Section: Component Definition
+// Purpose: Display portfolio projects with animations and interactive elements
 export function ProjectsSection() {
+  // Section: References
+  // Purpose: Store reference to section element for GSAP animations
   const sectionRef = useRef<HTMLElement>(null)
+  const [projects, setProjects] = useState(resumeData.projects.filter(project => project.featured).slice(0, 3))
   
-  // Get featured projects
-  const featuredProjects = resumeData.projects
-    .filter(project => project.featured)
-    .slice(0, 3)
-
+  // Section: Animation Setup
+  // Purpose: Initialize GSAP animations for project cards
   useEffect(() => {
     if (!sectionRef.current) return
 
@@ -38,14 +41,16 @@ export function ProjectsSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top 75%",
-          toggleActions: "play none none none"
+          toggleActions: "play none none reverse"
         }
       })
     }, sectionRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [projects]) // Add projects as dependency
 
+  // Section: Component UI
+  // Purpose: Render projects section with animated cards
   return (
     <section 
       ref={sectionRef}
@@ -58,45 +63,38 @@ export function ProjectsSection() {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
-          {featuredProjects.map((project, index) => (
-            <div 
-              key={project.id}
-              className="project-card group relative bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              {/* Project image */}
-              <div className="aspect-video relative overflow-hidden">
-                <Image
-                  src={project.image}
-                  alt={project.name}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-70"></div>
-                
-                {/* Technology badges */}
-                <div className="absolute bottom-3 left-3 flex flex-wrap gap-1">
-                  {project.technologies.slice(0, 3).map((tech, techIndex) => (
-                    <Badge
-                      key={`tech-${index}-${techIndex}`}
-                      variant="secondary"
-                      className="text-xs bg-black/50 backdrop-blur-sm text-white border-none"
-                    >
-                      {tech}
-                    </Badge>
-                  ))}
-                  {project.technologies.length > 3 && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs bg-black/50 backdrop-blur-sm text-white border-none"
-                    >
-                      +{project.technologies.length - 3}
-                    </Badge>
-                  )}
+          {projects.map((project) => (
+            <Card key={project.id} className="project-card group relative bg-card rounded-xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
+              <CardContent className="p-5 space-y-3">
+                <div className="flex items-start justify-between">
+                  <h3 className="text-xl font-semibold line-clamp-1 group-hover:text-primary transition-colors">
+                    {project.name}
+                  </h3>
+                  <div className="flex gap-2">
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        aria-label="View source code on GitHub"
+                      >
+                        <Github className="h-5 w-5" />
+                      </a>
+                    )}
+                    {project.url && (
+                      <a
+                        href={project.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        aria-label="View live demo"
+                      >
+                        <ExternalLink className="h-5 w-5" />
+                      </a>
+                    )}
+                  </div>
                 </div>
-              </div>
-              
-              <div className="p-5 space-y-3">
-                <h3 className="text-xl font-semibold line-clamp-1">{project.name}</h3>
                 <p className="text-muted-foreground line-clamp-2">{project.shortDescription}</p>
                 
                 <div className="pt-3 flex items-center justify-between">
@@ -104,30 +102,9 @@ export function ProjectsSection() {
                     View Details
                     <ChevronRight className="ml-1 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
                   </Link>
-                  
-                  <div className="flex items-center space-x-2">
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded-full hover:bg-muted transition-colors"
-                      aria-label="View source code on GitHub"
-                    >
-                      <Github className="h-4 w-4" />
-                    </a>
-                    <a
-                      href={project.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded-full hover:bg-muted transition-colors"
-                      aria-label="View live demo"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 

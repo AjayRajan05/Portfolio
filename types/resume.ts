@@ -1,6 +1,7 @@
 export interface Location {
   city: string;
   region: string;
+  country: string;
 }
 
 export interface Profile {
@@ -36,6 +37,7 @@ export interface SkillCategory {
 export interface Project {
   id: string;
   name: string;
+  title: string;
   description: string;
   shortDescription: string;
   startDate: string;
@@ -61,9 +63,14 @@ export interface Work {
 }
 
 export interface Education {
-  degree: string;
-  school: string;
-  year: string;
+  institution: string;
+  area: string;
+  studyType: string;
+  startDate: string;
+  endDate: string;
+  gpa: string;
+  courses: string[];
+  logo: string;
 }
 
 export interface Certification {
@@ -84,20 +91,11 @@ export interface SocialLinks {
 }
 
 export interface ResumeData {
-  name: string;
-  title: string;
-  summary: string;
-  email: string;
-  phone?: string;
-  location: Location;
+  basics: Basics;
+  skills: SkillCategory[];
+  projects: Project[];
+  work: Work[];
   education: Education[];
-  skills: string[];
-  certifications: string[];
-  projects: {
-    title: string;
-    description: string;
-    technologies: string[];
-    link?: string;
-  }[];
+  certifications: Certification[];
   socialLinks?: SocialLinks;
 } 

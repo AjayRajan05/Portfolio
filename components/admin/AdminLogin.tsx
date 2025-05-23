@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { signIn } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/hooks/use-toast'
@@ -10,26 +12,42 @@ interface AdminLoginProps {
 }
 
 export function AdminLogin({ onLogin }: AdminLoginProps) {
-  const [pin, setPin] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  const router = useRouter()
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
 
-    // Check if PIN matches the one in environment variable
-    if (pin === process.env.NEXT_PUBLIC_ADMIN_PIN) {
-      localStorage.setItem('adminAuthenticated', 'true')
-      onLogin()
-    } else {
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      })
+
+      if (result?.error) {
+        toast({
+          title: 'Authentication Failed',
+          description: 'Invalid email or password.',
+          variant: 'destructive',
+        })
+      } else {
+        onLogin()
+        router.push('/admin/dashboard')
+      }
+    } catch (error) {
       toast({
-        title: 'Invalid PIN',
-        description: 'Please enter the correct admin PIN.',
+        title: 'Error',
+        description: 'Something went wrong. Please try again.',
         variant: 'destructive',
       })
+    } finally {
+      setIsLoading(false)
     }
-    setIsLoading(false)
   }
 
   return (
@@ -37,16 +55,36 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
       <div className="bg-card p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold text-center mb-6">Admin Login</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="password"
-            placeholder="Enter admin PIN"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            className="w-full"
-            required
-          />
+          <div className="space-y-2">
+            <label htmlFor="email" className="text-sm font-medium">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              placeholder="admin@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <label htmlFor="password" className="text-sm font-medium">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full"
+              required
+            />
+          </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? 'Verifying...' : 'Login'}
+            {isLoading ? 'Signing in...' : 'Sign in'}
           </Button>
         </form>
       </div>

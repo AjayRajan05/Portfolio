@@ -29,7 +29,7 @@ export default function ContactPage() {
             </div>
             <div className="space-y-2">
               <p className="font-medium">Location</p>
-              <p className="text-muted-foreground">Kerala, India</p>
+              <p className="text-muted-foreground">Chennai, India</p>
             </div>
           </div>
         </div>
